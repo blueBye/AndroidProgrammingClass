@@ -13,6 +13,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import info.navidlabs.androidprogrammingclass.ui.theme.AndroidProgrammingClassTheme
+import java.math.BigInteger
+import java.security.MessageDigest
 import javax.crypto.Cipher
 import javax.crypto.KeyGenerator
 import javax.crypto.SecretKey
@@ -27,38 +29,18 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-                    val k = generateAESKey()
                     val p = "Hello Android"
-                    val c = aesEncrypt(p.toByteArray(), k)
-                    val d = aesDecrypt(c, k)
 
-                    Log.i("AES", "k: ${Base64.encodeToString(k.encoded, 0)}")
-                    Log.i("AES", "c: ${Base64.encodeToString(c, 0)}")
-                    Log.i("AES", "d: ${Base64.encodeToString(d, 0)}")
+                    val md5 = MessageDigest.getInstance("MD5")
+                    val sha256 = MessageDigest.getInstance("SHA-256")
 
-                    Text(text = d.toString())
+                    val hMD5 = md5.digest(p.toByteArray())
+                    val hSHA256 = sha256.digest(p.toByteArray())
+
+                    Log.i("Hash", "md5: ${BigInteger(1, hMD5).toString(16).padStart(32, '0')}")
+                    Log.i("Hash", "sha256: ${BigInteger(1, hSHA256).toString(16).padStart(32, '0')}")
                 }
             }
         }
-    }
-
-    fun generateAESKey(keySize: Int = 256): SecretKey {
-        val keyGenerator = KeyGenerator.getInstance("AES")
-        keyGenerator.init(keySize)
-        return keyGenerator.generateKey()
-    }
-
-    fun aesEncrypt(data: ByteArray, secretKey: SecretKey): ByteArray {
-        val cipher = Cipher.getInstance("AES/CBC/PKCS5Padding")
-        val ivParameterSpec = IvParameterSpec(ByteArray(16))
-        cipher.init(Cipher.ENCRYPT_MODE, secretKey, ivParameterSpec)
-        return cipher.doFinal(data)
-    }
-
-    fun aesDecrypt(encryptedData: ByteArray, secretKey: SecretKey): ByteArray {
-        val cipher = Cipher.getInstance("AES/CBC/PKCS5Padding")
-        val ivParameterSpec = IvParameterSpec(ByteArray(16))
-        cipher.init(Cipher.DECRYPT_MODE, secretKey, ivParameterSpec)
-        return cipher.doFinal(encryptedData)
     }
 }
