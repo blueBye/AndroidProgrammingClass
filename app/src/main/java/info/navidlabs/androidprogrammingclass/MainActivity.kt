@@ -5,16 +5,22 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import info.navidlabs.androidprogrammingclass.ui.theme.AndroidProgrammingClassTheme
 import android.Manifest
+import android.annotation.SuppressLint
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import android.graphics.Matrix
 import android.util.Log
+import android.widget.Toast
 import androidx.camera.core.CameraSelector
 import androidx.camera.core.ImageCapture.OnImageCapturedCallback
 import androidx.camera.core.ImageCaptureException
 import androidx.camera.core.ImageProxy
+import androidx.camera.video.FileOutputOptions
+import androidx.camera.video.Recording
+import androidx.camera.video.VideoRecordEvent
 import androidx.camera.view.CameraController
 import androidx.camera.view.LifecycleCameraController
+import androidx.camera.view.video.AudioConfig
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
@@ -25,6 +31,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Cameraswitch
 import androidx.compose.material.icons.filled.PhotoCamera
+import androidx.compose.material.icons.filled.Videocam
 import androidx.compose.material3.Divider
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -43,8 +50,11 @@ import androidx.compose.ui.unit.dp
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.viewmodel.compose.viewModel
+import java.io.File
 
 class MainActivity : ComponentActivity() {
+    private var recording: Recording? = null
+
     @OptIn(ExperimentalMaterial3Api::class)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -129,7 +139,65 @@ class MainActivity : ComponentActivity() {
                                     tint = Color.White
                                 )
                             }
+                            // record video
+                            IconButton(onClick = {
+                                recordVideo(controller)
+                            }) {
+                                Icon(
+                                    imageVector = Icons.Default.Videocam,
+                                    contentDescription = "Record video",
+                                    tint = Color.White
+                                )
+                            }
                         }
+                    }
+                }
+            }
+        }
+    }
+
+    private fun recordVideo(controller: LifecycleCameraController) {
+        if(recording != null) {
+            recording?.stop()
+            recording = null
+            return
+        }
+
+
+
+        // save video on disk (can't be on memory)
+        val outputFile = File(filesDir, "recording.mp4")
+
+        // auto generated
+        if (ActivityCompat.checkSelfPermission(
+                this,
+                Manifest.permission.RECORD_AUDIO
+            ) != PackageManager.PERMISSION_GRANTED
+        ) {
+            return
+        }
+
+        recording = controller.startRecording(
+            FileOutputOptions.Builder(outputFile).build(),
+            AudioConfig.create(true),
+            ContextCompat.getMainExecutor(applicationContext)
+        ) {event ->
+            when(event) {
+                is VideoRecordEvent.Finalize -> {
+                    if(event.hasError()) {
+                        recording?.close()
+                        recording = null
+                        Toast.makeText(
+                            applicationContext,
+                            "faced errors while recording",
+                            Toast.LENGTH_LONG
+                        ).show()
+                    } else {
+                        Toast.makeText(
+                            applicationContext,
+                            "recording completed",
+                            Toast.LENGTH_LONG
+                        ).show()
                     }
                 }
             }
