@@ -49,38 +49,18 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import info.navidlabs.androidprogrammingclass.ui.theme.AndroidProgrammingClassTheme
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        installSplashScreen()
         setContent {
             AndroidProgrammingClassTheme {
-                TextMarqueeScreen()
+                Text("Hello")
             }
         }
-    }
-
-    @OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
-    @Preview(
-        showBackground = true,
-        device = "id:pixel_7_pro",
-        name = "Second View",
-        showSystemUi = true,
-    )
-    @Composable
-    private fun TextMarqueeScreen() {
-        Text(
-            text="Lorem Ipsum \uD83D\uDC24 Long text \uD83D\uDC26 why?",
-            fontSize=24.sp,
-            modifier=Modifier
-                .padding(10.dp)
-                .basicMarquee(
-                    iterations=5,
-                    delayMillis=500,
-                    velocity=50.dp
-                )
-        )
     }
 }
 
