@@ -22,17 +22,31 @@ import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Email
+import androidx.compose.material.icons.filled.Person
+import androidx.compose.material.icons.filled.Send
+import androidx.compose.material3.Button
 import androidx.compose.material3.Card
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import info.navidlabs.androidprogrammingclass.ui.theme.AndroidProgrammingClassTheme
 
 class MainActivity : ComponentActivity() {
@@ -40,57 +54,12 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         setContent {
             AndroidProgrammingClassTheme {
-                Column(
-                    modifier = Modifier.padding(12.dp),
-                    verticalArrangement = Arrangement.Center,
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                ) {
-                    Text(
-                        text="Vertical List",
-                        modifier=Modifier.padding(bottom=8.dp),
-                    )
-                    VerticalList()
-
-                    Text(
-                        text="Vertical Grid List",
-                        modifier=Modifier.padding(bottom=8.dp),
-                    )
-                    VerticalGridList()
-
-                    Text(
-                        text="Horizontal List",
-                        modifier=Modifier.padding(bottom=8.dp),
-                    )
-                    HorizontalList()
-
-                    Text(
-                        text="Horizontal Grid List",
-                        modifier=Modifier.padding(bottom=8.dp),
-                    )
-                    HorizontalGridList()
-                }
+                FormScreen()
             }
         }
     }
 
-
-    @Preview(
-        showBackground = true,
-        device = "id:pixel_7_pro",
-        name = "First View",
-        showSystemUi = true,
-    )
-    @Composable
-    private fun VerticalList() {
-        LazyColumn(
-            Modifier.height(120.dp)
-        ) {
-            items(prepareOptionsList()) {
-                ItemLayoutVertical(optionList=it)
-            }
-        }
-    }
-
+    @OptIn(ExperimentalMaterial3Api::class)
     @Preview(
         showBackground = true,
         device = "id:pixel_7_pro",
@@ -98,114 +67,51 @@ class MainActivity : ComponentActivity() {
         showSystemUi = true,
     )
     @Composable
-    private fun VerticalGridList() {
-        LazyVerticalGrid(
-            modifier=Modifier.height(120.dp),
-            columns= GridCells.Adaptive(128.dp)
+    private fun FormScreen() {
+        var name by remember{ mutableStateOf("") }
+        var email by remember{ mutableStateOf("") }
+
+        Column(
+            modifier=Modifier.padding(16.dp).fillMaxWidth(),
+            horizontalAlignment=Alignment.CenterHorizontally,
         ) {
-            items(prepareOptionsList()) {
-                ItemLayout(optionsList=it)
-            }
-        }
-    }
-
-    @Preview(
-        showBackground = true,
-        device = "id:pixel_7_pro",
-        showSystemUi = true,
-        name = "Third View",
-    )
-    @Composable
-    private fun HorizontalList() {
-        LazyRow(
-            horizontalArrangement = Arrangement.spacedBy(8.dp)
-        ) {
-            items(prepareOptionsList()) {
-                ItemLayoutVertical(optionList=it)
-            }
-        }
-    }
-
-    @Preview(
-        showBackground = true,
-        device = "id:pixel_7_pro",
-        showSystemUi = true,
-        name = "Forth View",
-    )
-    @Composable
-    private fun HorizontalGridList() {
-        LazyHorizontalGrid(rows=GridCells.Fixed(count=4)) {
-            items(prepareOptionsList()){
-                ItemLayout(optionsList = it)
-            }
-        }
-    }
-
-    @Composable
-    fun ItemLayoutVertical(optionList: ImageList) {
-        Card(
-            shape=RoundedCornerShape(size=4.dp),
-            modifier=Modifier.padding(bottom=10.dp),
-        ) {
-            Row(
-                verticalAlignment=Alignment.CenterVertically,
-                modifier=Modifier.width(192.dp),
-            ) {
-                Image(
-                    painter=painterResource(optionList.icon),
-                    contentDescription=null,
-                    contentScale=ContentScale.FillHeight,
-                    modifier=Modifier.size(56.dp),
-                )
-                Text(
-                    text=(optionList.text),
-                    style=MaterialTheme.typography.titleSmall,
-                    modifier= Modifier.padding(horizontal=16.dp),
-                )
-            }
-        }
-    }
-
-
-    @Composable
-    private fun ItemLayout(
-        optionsList: ImageList,
-    ) {
-        Card(
-            shape=RoundedCornerShape(size=8.dp),
-            modifier=Modifier.padding(4.dp),
-        ) {
-            Box(
-                modifier= Modifier
+            Text(
+                text="Information Form",
+                color= Color.Blue,
+                modifier=Modifier.padding(bottom=10.dp),
+                fontSize=20.sp,
+            )
+            // name field
+            OutlinedTextField(
+                value=name,
+                onValueChange={ name=it },
+                label={Text(text="Enter Your Name")},
+                leadingIcon={Icon(Icons.Default.Person, null)},
+                modifier=Modifier.padding(vertical=8.dp).fillMaxWidth(),
+            )
+            // email field
+            OutlinedTextField(
+                value=email,
+                onValueChange={ email=it },
+                label={Text(text="Enter Your Email")},
+                leadingIcon={Icon(Icons.Default.Email, null)},
+                modifier=Modifier.padding(vertical=8.dp).fillMaxWidth(),
+            )
+            // submit button
+            Button(
+                onClick={/*TODO*/},
+                modifier=Modifier
+                    .padding(vertical=16.dp)
                     .fillMaxWidth()
-                    .clickable {}
-                    .padding(all = 8.dp),
-                contentAlignment=Alignment.Center,
-            ) {
-                Image(
-                    painter=painterResource(id=optionsList.icon),
-                    modifier=Modifier.size(size=100.dp),
-                    contentDescription=null,
+            ){
+                Icon(Icons.Default.Send, "Submit", tint=Color.White)
+                Text(
+                    text="Submit",
+                    color=Color.White,
+                    modifier=Modifier.padding(start=8.dp)
                 )
             }
         }
     }
-
-    private fun prepareOptionsList(): MutableList<ImageList> {
-        val imageML = mutableListOf<ImageList>()
-        imageML.add(ImageList(icon=R.drawable.image_0, text="0"))
-        imageML.add(ImageList(icon=R.drawable.image_1, text="1"))
-        imageML.add(ImageList(icon=R.drawable.image_2, text="2"))
-        imageML.add(ImageList(icon=R.drawable.image_3, text="3"))
-        imageML.add(ImageList(icon=R.drawable.image_4, text="4"))
-        imageML.add(ImageList(icon=R.drawable.image_5, text="5"))
-        imageML.add(ImageList(icon=R.drawable.image_6, text="6"))
-        imageML.add(ImageList(icon=R.drawable.image_7, text="7"))
-        imageML.add(ImageList(icon=R.drawable.image_8, text="8"))
-        imageML.add(ImageList(icon=R.drawable.image_9, text="9"))
-        return imageML
-    }
-
-    data class ImageList(val icon: Int, val text: String)
 }
 
