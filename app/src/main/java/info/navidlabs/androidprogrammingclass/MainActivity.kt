@@ -3,7 +3,9 @@ package info.navidlabs.androidprogrammingclass
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.basicMarquee
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -54,12 +56,12 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         setContent {
             AndroidProgrammingClassTheme {
-                FormScreen()
+                TextMarqueeScreen()
             }
         }
     }
 
-    @OptIn(ExperimentalMaterial3Api::class)
+    @OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
     @Preview(
         showBackground = true,
         device = "id:pixel_7_pro",
@@ -67,51 +69,18 @@ class MainActivity : ComponentActivity() {
         showSystemUi = true,
     )
     @Composable
-    private fun FormScreen() {
-        var name by remember{ mutableStateOf("") }
-        var email by remember{ mutableStateOf("") }
-
-        Column(
-            modifier=Modifier.padding(16.dp).fillMaxWidth(),
-            horizontalAlignment=Alignment.CenterHorizontally,
-        ) {
-            Text(
-                text="Information Form",
-                color= Color.Blue,
-                modifier=Modifier.padding(bottom=10.dp),
-                fontSize=20.sp,
-            )
-            // name field
-            OutlinedTextField(
-                value=name,
-                onValueChange={ name=it },
-                label={Text(text="Enter Your Name")},
-                leadingIcon={Icon(Icons.Default.Person, null)},
-                modifier=Modifier.padding(vertical=8.dp).fillMaxWidth(),
-            )
-            // email field
-            OutlinedTextField(
-                value=email,
-                onValueChange={ email=it },
-                label={Text(text="Enter Your Email")},
-                leadingIcon={Icon(Icons.Default.Email, null)},
-                modifier=Modifier.padding(vertical=8.dp).fillMaxWidth(),
-            )
-            // submit button
-            Button(
-                onClick={/*TODO*/},
-                modifier=Modifier
-                    .padding(vertical=16.dp)
-                    .fillMaxWidth()
-            ){
-                Icon(Icons.Default.Send, "Submit", tint=Color.White)
-                Text(
-                    text="Submit",
-                    color=Color.White,
-                    modifier=Modifier.padding(start=8.dp)
+    private fun TextMarqueeScreen() {
+        Text(
+            text="Lorem Ipsum \uD83D\uDC24 Long text \uD83D\uDC26 why?",
+            fontSize=24.sp,
+            modifier=Modifier
+                .padding(10.dp)
+                .basicMarquee(
+                    iterations=5,
+                    delayMillis=500,
+                    velocity=50.dp
                 )
-            }
-        }
+        )
     }
 }
 
